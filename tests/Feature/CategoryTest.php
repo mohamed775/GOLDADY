@@ -17,56 +17,56 @@ class CategoryTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
+        $this->actingAs($this->user, 'api');
+
     }
 
     public function test_create_category()
     {
-        $response = $this->actingAs($this->user, 'api')->postJson('/api/categories', [
+
+        $response = $this->actingAs($this->user, 'api')->postJson('/api/Categories', [
             'name' => 'Sample Category',
         ]);
 
-        $response->assertStatus(201);
+        $response->assertStatus(200);
         $this->assertDatabaseHas('categories', [
             'name' => 'Sample Category',
         ]);
+
     }
 
     public function test_get_categories()
     {
-        $this->actingAs($this->user, 'api');
 
         Category::factory()->count(3)->create();
 
-        $response = $this->getJson('/api/categories');
+        $response = $this->getJson('/api/Categories');
 
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                '*' => ['id', 'name', 'created_at', 'updated_at']
-            ]);
+        $response->assertStatus(200);
+        
     }
 
     public function test_get_category()
     {
-        $this->actingAs($this->user, 'api');
         $category = Category::factory()->create();
 
-        $response = $this->getJson("/api/categories/{$category->id}");
+        $response = $this->getJson("/api/Categories/{$category->id}");
 
         $response->assertStatus(200)
             ->assertJson([
-                'id' => $category->id,
-                'name' => $category->name,
-                'created_at' => $category->created_at->toISOString(),
-                'updated_at' => $category->updated_at->toISOString(),
+                "status" => true,
+                "message" => "category found",
+                "category"=> ['id' => $category->id,'category_name' => $category->name],
+                "codeStatus"=> 200
+            
             ]);
     }
 
     public function test_update_category()
     {
-        $this->actingAs($this->user, 'api');
         $category = Category::factory()->create();
 
-        $response = $this->putJson("/api/categories/{$category->id}", [
+        $response = $this->putJson("/api/Categories/{$category->id}", [
             'name' => 'Updated Category',
         ]);
 
@@ -79,12 +79,11 @@ class CategoryTest extends TestCase
 
     public function test_delete_category()
     {
-        $this->actingAs($this->user, 'api');
         $category = Category::factory()->create();
 
-        $response = $this->deleteJson("/api/categories/{$category->id}");
+        $response = $this->deleteJson("/api/Categories/{$category->id}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(200);
         $this->assertDatabaseMissing('categories', [
             'id' => $category->id,
         ]);

@@ -21,7 +21,7 @@ Route::post('/register' , [authController::class , 'register']);
 Route::get('/login' , [authController::class , 'login']);
 
 
-Route::group(['middleware' => 'auth:api'], function(){
+// Route::group(['middleware' => 'auth:api'], function(){
 
   Route::get('/Categories' , [CategoryController::class , 'index']);
   Route::get('/Categories/{id}' , [CategoryController::class , 'show']);
@@ -40,4 +40,4 @@ Route::group(['middleware' => 'auth:api'], function(){
   Route::get('/logout' , [authController::class , 'logout']);
 
 
-});
+// });

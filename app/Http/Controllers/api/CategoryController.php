@@ -18,7 +18,7 @@ class CategoryController extends Controller
         try{
 
             $categories = category::select()->paginate(10);
-            return ResponseHelper::returnData('categories' ,$categories , 'all categories retrived' , 200 );  
+            return ResponseHelper::returnData('categories' , CategoryResource::collection($categories)  , 'all categories retrived' , 200 );  
 
         }catch(\Exception $e){
            return ResponseHelper::returnError($e->getMessage());
