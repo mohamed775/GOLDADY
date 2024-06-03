@@ -2,50 +2,80 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\api\authController;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    // public function test_user_registration()
-    // {
-    //     $response = $this->postJson('/api/register', [
-    //         'name' => 'John Doe',
-    //         'email' => 'john@example.com',
-    //         'password' => 'password',
-    //         'password_confirmation' => 'password',
-    //     ]);
+    public function testRegister()
+    {
+        $request = new Request([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
 
-    //     $response->assertStatus(201)
-    //         ->assertJsonStructure(['access_token']);
-    // }
+        $controller = new authController();
 
-    // public function test_user_login()
-    // {
-    //     $user = User::factory()->create([
-    //         'password' => bcrypt($password = 'password'),
-    //     ]);
+        $response = $controller->register($request);
 
-    //     $response = $this->postJson('/api/login', [
-    //         'email' => $user->email,
-    //         'password' => $password,
-    //     ]);
+        $this->assertEquals(200, $response->getStatusCode());
 
-    //     $response->assertStatus(200)
-    //         ->assertJsonStructure(['access_token']);
-    // }
+        // Ensure user is created in the database
+        $this->assertDatabaseHas('users', [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
+    }
 
-    // public function test_get_jwt_token()
-    // {
-    //     $user = User::factory()->create();
+    public function testLogin()
+    {
+        // Create a user for testing
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+            'password' => Hash::make('password'),
+        ]);
 
-    //     $response = $this->actingAs($user)->get('/api/token');
+        $request = new Request([
+            'email' => 'test@example.com',
+            'password' => 'password',
+        ]);
 
-    //     $response->assertStatus(200)
-    //         ->assertJsonStructure(['access_token']);
-    // }
+        $controller = new AuthController();
+
+        $response = $controller->login($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // Ensure access token is returned
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('access_token', $responseData);
+
+        // Ensure access token is valid
+        $this->assertNotNull(Auth::user());
+    }
+
+    public function testLogout()
+    {
+        // Authenticate a user
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        $controller = new AuthController();
+
+        $response = $controller->logout();
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // Ensure user is logged out
+        $this->assertGuest();
+    }
 }
