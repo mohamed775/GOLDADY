@@ -6,97 +6,113 @@ use App\Models\category;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class PostTest extends TestCase
 {
     use RefreshDatabase;
 
-    // protected $user;
+    protected $user;
 
-    // protected function setUp(): void
-    // {
-    //     parent::setUp();
-    //     $this->user = User::factory()->create();
-    // }
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create();
+        $this->actingAs($this->user, 'api');
 
-    // public function test_create_post()
-    // {
-    //     $category = category::factory()->create();
+    }
 
-    //     $response = $this->actingAs($this->user, 'api')->postJson('/api/posts', [
-    //         'title' => 'Sample Post',
-    //         'body' => 'This is a sample post.',
-    //         'category_id' => $category->id,
-    //     ]);
+    public function test_index()
+    {
+        Post::factory()->count(10)->create();
 
-    //     $response->assertStatus(201);
-    //     $this->assertDatabaseHas('posts', [
-    //         'title' => 'Sample Post',
-    //     ]);
-    // }
+        $response = $this->getJson('/api/posts');
 
-    // public function test_get_posts()
-    // {
-    //     $this->actingAs($this->user, 'api');
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'posts' => [
+                    'data' => [
+                        '*' => ['id', 'user_id', 'category_id', 'title', 'content']
+                    ]
+                ],
+                'message'
+            ]);
+    }
 
-    //     Post::factory()->count(3)->create();
+    public function test_show()
+    {
+        $post = Post::factory()->create();
 
-    //     $response = $this->getJson('/api/posts');
+        $response = $this->getJson("/api/posts/{$post->id}");
 
-    //     $response->assertStatus(200)
-    //         ->assertJsonStructure([
-    //             '*' => ['id', 'title', 'body', 'user_id', 'category_id', 'created_at', 'updated_at']
-    //         ]);
-    // }
+        $response->assertStatus(200);
+    }
 
-    // public function test_get_post()
-    // {
-    //     $this->actingAs($this->user, 'api');
-    //     $post = Post::factory()->create();
 
-    //     $response = $this->getJson("/api/posts/{$post->id}");
+    public function test_store()
+    {
+        $category = category::factory()->create();
+        $data = [
+            'user_id' => $this->user->id,
+            'category_id' => $category->id,
+            'title' => 'New Post',
+            'content' => 'Post content'
+        ];
 
-    //     $response->assertStatus(200)
-    //         ->assertJson([
-    //             'id' => $post->id,
-    //             'title' => $post->title,
-    //             'body' => $post->body,
-    //             'user_id' => $post->user_id,
-    //             'category_id' => $post->category_id,
-    //             'created_at' => $post->created_at->toISOString(),
-    //             'updated_at' => $post->updated_at->toISOString(),
-    //         ]);
-    // }
+        Log::shouldReceive('info')->once();
 
-    // public function test_update_post()
-    // {
-    //     $this->actingAs($this->user, 'api');
-    //     $post = Post::factory()->create();
+        $response = $this->postJson('/api/posts', $data);
 
-    //     $response = $this->putJson("/api/posts/{$post->id}", [
-    //         'title' => 'Updated Post',
-    //         'body' => 'This is an updated post.',
-    //     ]);
+        $response->assertStatus(200);
 
-    //     $response->assertStatus(200);
-    //     $this->assertDatabaseHas('posts', [
-    //         'id' => $post->id,
-    //         'title' => 'Updated Post',
-    //     ]);
-    // }
+        $this->assertDatabaseHas('posts', $data);
+    }
 
-    // public function test_delete_post()
-    // {
-    //     $this->actingAs($this->user, 'api');
-    //     $post = Post::factory()->create();
 
-    //     $response = $this->deleteJson("/api/posts/{$post->id}");
 
-    //     $response->assertStatus(204);
-    //     $this->assertDatabaseMissing('posts', [
-    //         'id' => $post->id,
-    //     ]);
-    // }
+    public function test_update()
+    {
+        $post = Post::factory()->create();
+
+        $data = [
+            'title' => 'Updated Post',
+            'content' => 'Updated content'
+        ];
+
+        Log::shouldReceive('info')->once();
+
+        $response = $this->putJson("/api/posts/{$post->id}", $data);
+
+        $response->assertStatus(200);
+            
+
+        $this->assertDatabaseHas('posts', [
+            'id' => $post->id,
+            'title' => 'Updated Post',
+            'content' => 'Updated content'
+        ]);
+    }
+
+
+
+
+    public function test_delete()
+    {
+        $post = Post::factory()->create();
+
+        Log::shouldReceive('info')->once();
+
+        $response = $this->deleteJson("/api/posts/{$post->id}");
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'message' => 'post deleted successfully !'
+            ]);
+
+        $this->assertDatabaseMissing('posts', [
+            'id' => $post->id
+        ]);
+    }
+
 }
