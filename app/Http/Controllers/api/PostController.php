@@ -60,7 +60,7 @@ class PostController extends Controller
             $post = Post::create($request->all());
 
             // Logging
-            log::info('Post created: ', $post->toArray());
+            // log::info('Post created: ', $post->toArray());
             
             return ResponseHelper::returnData('post' ,PostResource::make($post) , 'post added successfully !' , 201); 
 
