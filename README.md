@@ -42,7 +42,7 @@ Test Cases :
 
 - Clone the repository
    
-       git clone https://github.com/yourusername/blog-application.git
+       git clone https://github.com/mohamed775/GOLDADY.git
        cd GoldADY
 
 - Install dependencies
@@ -88,10 +88,10 @@ Authentication Endpoints :
      - Request Body:
 
             {
-            "name": "John Doe",
-            "email": "john@example.com",
+            "name": "username",
+            "email": "username@example.com",
             "password": "password",
-           "password_confirmation": "password"
+            "password_confirmation": "password"
             }
 - Login
 
@@ -99,7 +99,7 @@ Authentication Endpoints :
   - Request Body:
 
           {
-          "email": "john@example.com",
+          "email": "username@example.com",
           "password": "password"
           }
   - Logout
