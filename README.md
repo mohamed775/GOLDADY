@@ -103,7 +103,7 @@ Authentication Endpoints :
           "password": "password"
           }
   - Logout
-     - POST /api/logout
+     - GET /api/logout
        
 - API Endpoints for Posts
   - Fetch All Posts
