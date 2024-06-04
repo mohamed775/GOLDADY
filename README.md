@@ -1,66 +1,168 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+ <div align="center">
+  <h1>  GoldADY Application </h1>
+</div>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+# 📋 Objective
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The objective of this assessment is to evaluate your proficiency in setting up a Laravel project, designing and implementing a database schema, creating RESTful API endpoints for CRUD operations, and incorporating user authentication functionalities, including registration and login.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# 📜 Task Description
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+In this task, you are required to set up a Laravel project for a blog application. The application should have two main entities: posts and categories. In addition to the previously mentioned tasks, you need to implement user registration and login functionalities. Your primary responsibilities include:
 
-## Learning Laravel
+Authentication Endpoints :
+ - Implement API endpoints for user authentication.
+API Endpoints for Posts :
+ - Implement API endpoints for CRUD operations on posts.
+API Endpoints for Categories : 
+ - Implement API endpoints for CRUD operations on categories.
+Additional Features :
+ - Implement logging for post creation, update, and deletion operations. Log entries should include relevant details for 
+   auditing purposes.
+ - Enhance the GET /api/posts endpoint to include information about the user who created each post.
+Test Cases :
+ - Write comprehensive unit tests for all API endpoints, ensuring functionality, edge cases, and error handling are covered.
+ - Include tests for user authentication, post operations, category operations, and logging.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+   
+# 🛠️ Technologies Used
+ - Laravel
+ - PHP 
+ - MySQL 
+ - PHPUnit for testing
+   
+# 🔧 Prerequisites
+ - PHP 
+ - Composer
+ - MySQL 
+ - Laravel Installer (optional)
+   
+# 🚀 Installation
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- Clone the repository
+   
+       git clone https://github.com/yourusername/blog-application.git
+       cd GoldADY
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Install dependencies
+  
+       composer install
 
-## Laravel Sponsors
+- Create a copy of the .env file
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+       cp .env.example .env
 
-### Premium Partners
+- Generate an application key
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+       php artisan key:generate
+  
+- Set up the database
 
-## Contributing
+  - Update your .env file with your database credentials
+    
+         DB_CONNECTION=mysql
+         DB_HOST=127.0.0.1
+         DB_PORT=3306
+         DB_DATABASE=your_database
+         DB_USERNAME=your_username
+         DB_PASSWORD=your_password
+      
+- Run database migrations
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+          php artisan migrate
 
-## Code of Conduct
+# ▶️ Running the Project
+- Serve the application
+  
+        php artisan serve
+  
+Access the application
+ - Open your browser and go to http://localhost:8080
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 📚 API Endpoints
 
-## Security Vulnerabilities
+Authentication Endpoints :
+ - Register
+     - POST /api/register
+     - Request Body:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+            {
+            "name": "John Doe",
+            "email": "john@example.com",
+            "password": "password",
+           "password_confirmation": "password"
+            }
+- Login
 
-## License
+  - GET /api/login
+  - Request Body:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+          {
+          "email": "john@example.com",
+          "password": "password"
+          }
+  - Logout
+     - POST /api/logout
+       
+- API Endpoints for Posts
+  - Fetch All Posts
+      - GET /api/posts
+  - Fetch Specific Post
+     - GET /api/posts/{id}
+  - Add Post
+     - POST /api/posts
+     - Request Body:
+
+            {
+            "category_id": 1,
+            "title": "Post Title",
+            "content": "Post content"
+            }
+       
+- Update Post
+
+   - PUT /api/posts/{id}
+   - Request Body:
+
+         {
+         "title": "Updated Title",
+         "content": "Updated content"
+         }
+  - Delete Post
+     - DELETE /api/posts/{id}
+
+  - API Endpoints for Categories
+      - Fetch All Categories
+          - GET /api/categories
+     - Fetch Specific Category
+          - GET /api/categories/{id}
+     - Add Category
+         - POST /api/categories
+     - Request Body:
+
+           {
+           "name": "Category Name"
+           }
+- Update Category
+
+  - PUT /api/categories/{id}
+  - Request Body:
+
+        {
+        "name": "Updated Category Name"
+        }
+- Delete Category
+
+  - DELETE /api/categories/{id}
+ 
+
+# 🧪 Testing
+
+- Run the following command to execute the test cases:
+
+         php artisan test
+  
+# 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
