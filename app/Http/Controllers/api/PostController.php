@@ -7,6 +7,7 @@ use App\Http\Resources\PostResource;
 use App\Http\Responces\ResponseHelper;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
@@ -59,8 +60,10 @@ class PostController extends Controller
     public function store(Request $request)
     {
         try{
+            $user = Auth::user(); // Get the authenticated user
+
             $validate=  Validator::make($request->all(),[
-                'user_id' => 'required|int',
+                // 'user_id' => 'required|int',
                 'category_id' => 'required|int',
                 'title' => 'required|string|max:255',
                 'content' => 'required|string|max:500'
@@ -70,7 +73,13 @@ class PostController extends Controller
                 return ResponseHelper::validateError( $validate->errors());
             }
     
-            $post = Post::create($request->all());
+            // Create a new post
+            $post = new Post();
+            $post->title = $request->title;
+            $post->content = $request->content;
+            $post->user_id = $user->id; // Associate the post with the authenticated user
+            $post->category_id = $request->category_id ;
+            $post->save();
 
             // Logging
             log::info('Post created: ', $post->toArray());
@@ -92,6 +101,11 @@ class PostController extends Controller
             $post = Post::with('user','category')->find($id);
 
             if($post){
+
+                // Check if the authenticated user is the owner of the post
+                if ($post->user_id !== Auth::id()) {
+                    return response()->json(['error' => 'You are not authorized to edit this post'], 403);
+                }
 
                 $validate = Validator::make($request->all(),[
                     'title' => 'required|string|max:255',
@@ -130,6 +144,11 @@ class PostController extends Controller
 
             $post = Post::find($id);
             if($post){
+
+                 // Check if the authenticated user is the owner of the post
+                 if ($post->user_id !== Auth::id()) {
+                   return response()->json(['error' => 'You are not authorized to delete this post'], 403);
+                 }
 
                 $post->delete();
 
