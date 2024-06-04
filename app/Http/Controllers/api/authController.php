@@ -14,8 +14,10 @@ use PDO;
 class authController extends Controller
 {
 
+    /*
+       ResponseHelper -> class has many method that handle server response 
+    */
     
-
     // register  new user 
 
     public function register(Request $request){
@@ -28,7 +30,7 @@ class authController extends Controller
  
         if($valideted->fails())
         {
-            return ResponseHelper::returnError( $valideted->errors());
+            return ResponseHelper::validateError( $valideted->errors());
         }
 
         $user = User::create([
@@ -37,7 +39,7 @@ class authController extends Controller
              'password' => Hash::make($request->password ) 
 
          ]);
-         return ResponseHelper::returnData('User' , $user  ,'insert successfully' , 201 );
+         return response()->json(ResponseHelper::returnData('User' , $user  ,'insert successfully'),201) ;
      }
 
 
@@ -53,14 +55,14 @@ class authController extends Controller
      
             if($valideted->fails())
             {
-                return ResponseHelper::returnError( $valideted->errors());
+                return ResponseHelper::validateError( $valideted->errors());
             }
             if(!$token = auth()->attempt($valideted->validate()))
             {
-                return ResponseHelper::returnError('user & password is incorrect');
+                return ResponseHelper::validateError('user & password is incorrect');
             }
 
-            return ResponseHelper::returnData('access_token' , $token ,'login success' , 200);
+            return ResponseHelper::returnData('access_token' , $token ,'login success' );
      }
 
 
@@ -69,9 +71,9 @@ class authController extends Controller
      public function logout(){
         if(Auth::user()){
             auth()->logout();
-            return ResponseHelper::returnSuccessMessage('user logged out' , 200);
+            return ResponseHelper::returnSuccessMessage('user logged out');
         }
-        return ResponseHelper::returnError('user not authenticated');
+        return ResponseHelper::notAuthenticated();
      }
 
  

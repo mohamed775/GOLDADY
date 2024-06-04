@@ -13,18 +13,28 @@ use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
+
+    /*
+       - ResponseHelper -> class has many method that handle server response
+       - PostResource -> DTO for save DB
+    */
     
+    // getAll posts
+
     public function index()
     {
         try{
 
             $posts = Post::with('user' ,'category')->paginate(10);
-            return ResponseHelper::returnData('posts' , $posts , 'all posts retrived' , 200 );  
+            return  ResponseHelper::returnData('posts' , $posts , 'all posts retrived' );  
 
         }catch(\Exception $e){
-           return ResponseHelper::returnError($e->getMessage());
+           return ResponseHelper::returnServerError($e->getMessage());
         }
     }
+
+
+    // get specific post by : id
 
     public function show(string $id)
     {
@@ -33,15 +43,18 @@ class PostController extends Controller
             $post = Post::with('user' , 'category')->find($id);
 
             if($post){
-                return ResponseHelper::returnData('post' ,PostResource::make($post) , 'post exist' , 200); 
+                return ResponseHelper::returnData('post' ,PostResource::make($post) , 'post exist'); 
             } 
 
-            return ResponseHelper::returnError('post not found');
+            return ResponseHelper::notFound() ;
 
         }catch(\Exception $e ){
-            return ResponseHelper::returnError($e->getMessage());
+            return ResponseHelper::returnServerError($e->getMessage());
         }
     }
+
+
+    // Add
 
     public function store(Request $request)
     {
@@ -54,28 +67,29 @@ class PostController extends Controller
             ]);
 
             if($validate->fails()){
-                return ResponseHelper::returnError( $validate->errors());
+                return ResponseHelper::validateError( $validate->errors());
             }
     
             $post = Post::create($request->all());
 
             // Logging
-            // log::info('Post created: ', $post->toArray());
+            log::info('Post created: ', $post->toArray());
             
-            return ResponseHelper::returnData('post' ,PostResource::make($post) , 'post added successfully !' , 201); 
-
+            return response()->json(ResponseHelper::returnData('post' ,PostResource::make($post) , 'post added successfully !') , 201) ; 
     
         }catch(\Exception $e){
-            return ResponseHelper::returnError($e->getMessage());
+            return ResponseHelper::returnServerError($e->getMessage());
         }
     }
 
     
+    //update
+
     public function update(Request $request, string $id)
     {
         try{
 
-            $post = Post::with('user' ,'category')->find($id);
+            $post = Post::with('user','category')->find($id);
 
             if($post){
 
@@ -85,7 +99,7 @@ class PostController extends Controller
                 ]);
 
                 if($validate->fails()){
-                    return ResponseHelper::returnError( $validate->errors());
+                    return ResponseHelper::validateError( $validate->errors());
                 }
 
                 $post->title  = $request->title ;
@@ -93,33 +107,41 @@ class PostController extends Controller
 
                 $post->save();
 
+                // Logging
                 Log::info('Post updated: ', $post->toArray());
 
-                return ResponseHelper::returnData('post' ,PostResource::make($post) , 'post updated successfully !' , 200); 
+                return response()->json(ResponseHelper::returnData('post' ,PostResource::make($post) , 'post updated successfully !') , 202) ; 
+
             } 
 
-            return ResponseHelper::returnError('post not found');
+            return ResponseHelper::notFound() ;
     
         }catch(\Exception $e){
-            return ResponseHelper::returnError($e->getMessage());
+            return ResponseHelper::returnServerError($e->getMessage());
         }
     }
 
-    
+
+    //delete
+
     public function destroy(string $id)
     {
         try{
 
             $post = Post::find($id);
             if($post){
+
                 $post->delete();
+
+                // Logging
                 Log::info('Post deleted: ', $post->toArray());
-                return ResponseHelper::returnSuccessMessage('post deleted successfully !' , 200); 
+
+                return ResponseHelper::returnSuccessMessage('post deleted successfully !'); 
             } 
-            return ResponseHelper::returnError('post not found');
+            return ResponseHelper::notFound() ;
     
         }catch(\Exception $e){
-            return ResponseHelper::returnError($e->getMessage());
+            return ResponseHelper::returnServerError($e->getMessage());
         }
     }
 }

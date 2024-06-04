@@ -12,20 +12,30 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
+
+    /*
+      - ResponseHelper -> class has many method that handle server response 
+      - CategoryResource -> DTO for save  DB
+    */
     
+
+    // getAll categories
+
     public function index()
     {
         try{
 
             $categories = category::select()->paginate(10);
-            return ResponseHelper::returnData('categories' , CategoryResource::collection($categories)  , 'all categories retrived' , 200 );  
+            return ResponseHelper::returnData('categories' , CategoryResource::collection($categories)  , 'all categories retrived ');  
 
         }catch(\Exception $e){
-           return ResponseHelper::returnError($e->getMessage());
+           return ResponseHelper::returnServerError($e->getMessage());
         }
         
     }
 
+
+    // get specific category by : id
 
     public function show(string $id)
     {
@@ -34,40 +44,44 @@ class CategoryController extends Controller
             $category = category::find($id);
 
             if($category){
-                return ResponseHelper::returnData('category' ,CategoryResource::make($category) , 'category found' , 200); 
+                return ResponseHelper::returnData('category' ,CategoryResource::make($category) , 'category exist'); 
             } 
 
-            return ResponseHelper::returnError('category not found');
+            return ResponseHelper::notFound();
 
         }catch(\Exception $e ){
-            return ResponseHelper::returnError($e->getMessage());
+            return ResponseHelper::returnServerError($e->getMessage());
         }
         
     }
 
 
+    // add 
+
     public function store(Request $request)
     {
         try{
-            $validate=  Validator::make($request->all(),['name' => 'required|string|max:255|unique:categories']);
 
-            if($validate->fails()){
-                return ResponseHelper::returnError( $validate->errors());
+            $validate = Validator::make($request->all(),['name' => 'required|string|max:255|unique:categories']);
+
+            if($validate->fails()){ 
+                return ResponseHelper::validateError( $validate->errors());
             }
     
             $category = category::create($request->all());
             
-            return ResponseHelper::returnData('category' ,CategoryResource::make($category) , 'category added successfully !' , 201); 
+            return response()->json(ResponseHelper::returnData('category' ,CategoryResource::make($category) , 'category added successfully !') , 201) ; 
 
     
         }catch(\Exception $e){
-            return ResponseHelper::returnError($e->getMessage());
+            return ResponseHelper::returnServerError($e->getMessage());
         }
 
     }
 
 
-    
+    // update 
+
     public function update(Request $request, string $id)
     {
         try{
@@ -81,23 +95,25 @@ class CategoryController extends Controller
                 ]);
 
                 if($validate->fails()){
-                    return ResponseHelper::returnError( $validate->errors());
+                    return ResponseHelper::validateError( $validate->errors());
                 }
 
                 $category->name  = $request->name ;
                 $category->save();
 
-                return ResponseHelper::returnData('category' ,CategoryResource::make($category) , 'category updated successfully !' , 200); 
+                return response()->json(ResponseHelper::returnData('category' ,CategoryResource::make($category) , 'category updated successfully !') , 202) ; 
+
             } 
 
-            return ResponseHelper::returnError('category not found');
+            return ResponseHelper::notFound() ;
     
         }catch(\Exception $e){
-            return ResponseHelper::returnError($e->getMessage());
+            return ResponseHelper::returnServerError($e->getMessage());
         }
     }
 
-    
+    // delete 
+
     public function destroy(string $id)
     {
         try{
@@ -105,12 +121,12 @@ class CategoryController extends Controller
             $category = category::find($id);
             if($category){
                 $category->delete();
-                return ResponseHelper::returnSuccessMessage('category deleted successfully !' , 200); 
+                return ResponseHelper::returnSuccessMessage('category deleted successfully !'); 
             } 
-            return ResponseHelper::returnError('category not found');
+            return ResponseHelper::notFound() ;
     
         }catch(\Exception $e){
-            return ResponseHelper::returnError($e->getMessage());
+            return ResponseHelper::returnServerError($e->getMessage());
         }
     }
 }

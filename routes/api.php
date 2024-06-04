@@ -23,11 +23,11 @@ Route::get('/login' , [authController::class , 'login']);
 
 // Route::group(['middleware' => 'auth:api'], function(){
 
-  Route::get('/Categories' , [CategoryController::class , 'index']);
-  Route::get('/Categories/{id}' , [CategoryController::class , 'show']);
-  Route::post('/Categories' , [CategoryController::class , 'store']);
-  Route::put('/Categories/{id}' , [CategoryController::class , 'update']);
-  Route::delete('/Categories/{id}' , [CategoryController::class , 'destroy']);
+  Route::get('/categories' , [CategoryController::class , 'index']);
+  Route::get('/categories/{id}' , [CategoryController::class , 'show']);
+  Route::post('/categories' , [CategoryController::class , 'store']);
+  Route::put('/categories/{id}' , [CategoryController::class , 'update']);
+  Route::delete('/categories/{id}' , [CategoryController::class , 'destroy']);
 
 
   Route::get('/posts' , [PostController::class , 'index']);
