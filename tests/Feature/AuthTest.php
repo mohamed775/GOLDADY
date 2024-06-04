@@ -27,7 +27,7 @@ class AuthTest extends TestCase
 
         $response = $controller->register($request);
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(201, $response->getStatusCode());
 
         // Ensure user is created in the database
         $this->assertDatabaseHas('users', [

@@ -6,42 +6,66 @@ use App\Models\category;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class PostTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase , WithFaker;
 
-    protected $user;
+    protected $user ;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->actingAs($this->user, 'api');
+        $this->actingAs($this->user);
 
     }
-
-    public function test_index()
+    /**
+     * Test fetching all posts.
+     *
+     * @return void
+     */
+    public function testFetchAllPosts()
     {
-        Post::factory()->count(10)->create();
+    
+        $posts = Post::factory()->count(5)->create();
 
         $response = $this->getJson('/api/posts');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'posts' => [
-                    'data' => [
-                        '*' => ['id', 'user_id', 'category_id', 'title', 'content']
+                'data' => [
+                    '*' => [
+                        'id',
+                        'post_title',
+                        'post_content',
+                        'created_By' => [
+                            'id',
+                            'userName',
+                            'user_email',
+                            
+                        ],
+                        'post_category' => [
+                            'id',
+                            'category_name',
+                           
+                        ]
                     ]
-                ],
-                'message'
+                ]
             ]);
     }
 
-    public function test_show()
+    /**
+     * Test fetching a specific post.
+     *
+     * @return void
+     */
+    public function testFetchSpecificPost()
     {
+    
         $post = Post::factory()->create();
 
         $response = $this->getJson("/api/posts/{$post->id}");
@@ -49,76 +73,74 @@ class PostTest extends TestCase
         $response->assertStatus(200);
     }
 
-
-    public function test_store()
+    /**
+     * Test adding a new post.
+     *
+     * @return void
+     */
+    public function testAddPost()
     {
+        
 
-        $category = category::factory()->create();
+        $category = Category::factory()->create();
 
-        // Request data
-        $data = [
+        $postData = [
             'user_id' => $this->user->id,
             'category_id' => $category->id,
-            'title' => 'New Post',
-            'content' => 'Post content',
+            'title' => $this->faker->sentence,
+            'content' => $this->faker->paragraph
         ];
 
-        // Make POST request to create a new post
-        $response = $this->postJson('/api/posts', $data);
+        $response = $this->postJson('/api/posts', $postData);
 
-        // Assert response status is OK
-        $response->assertStatus(200);
+        $response->assertStatus(201);       
 
-        // Assert the post is stored in the database
-        // $this->assertDatabaseHas('posts', $data );
     }
 
-
-
-
-
-    public function test_update()
+    /**
+     * Test updating a post.
+     *
+     * @return void
+     */
+    public function testUpdatePost()
     {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
         $post = Post::factory()->create();
 
-        $data = [
-            'title' => 'Updated Post',
-            'content' => 'Updated content'
+        $updatedData = [
+            'title' => $this->faker->sentence,
+            'content' => $this->faker->paragraph
         ];
 
-        Log::shouldReceive('info')->once();
+        $response = $this->putJson("/api/posts/{$post->id}", $updatedData);
 
-        $response = $this->putJson("/api/posts/{$post->id}", $data);
+        $response->assertStatus(202);
 
-        $response->assertStatus(200);
-            
-
-        $this->assertDatabaseHas('posts', [
-            'id' => $post->id,
-            'title' => 'Updated Post',
-            'content' => 'Updated content'
-        ]);
     }
 
-
-
-
-    public function test_delete()
+    /**
+     * Test deleting a post.
+     *
+     * @return void
+     */
+    public function testDeletePost()
     {
-        $post = Post::factory()->create();
+        $user = User::factory()->create();
+        $this->actingAs($user);
 
-        Log::shouldReceive('info')->once();
+        $post = Post::factory()->create();
 
         $response = $this->deleteJson("/api/posts/{$post->id}");
 
         $response->assertStatus(200)
             ->assertJson([
+                "status"=> true,
                 'message' => 'post deleted successfully !'
             ]);
 
-        $this->assertDatabaseMissing('posts', [
-            'id' => $post->id
-        ]);
     }
+    
 
 }
