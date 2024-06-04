@@ -25,7 +25,7 @@ class PostController extends Controller
     {
         try{
 
-            $posts = Post::with('user' ,'category')->paginate($request->get('per_page' ,10));  // coustom paginate 
+            $posts = Post::with('user' ,'category')->paginate($request->get('per_page' ,10));  // custom paginate 
             return  PostResource::collection($posts);  
 
         }catch(\Exception $e){
