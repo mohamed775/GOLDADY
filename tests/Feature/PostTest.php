@@ -12,6 +12,9 @@ use Tests\TestCase;
 
 class PostTest extends TestCase
 {
+
+    /* -----   Post UnitTest   ----- */
+
     use RefreshDatabase , WithFaker;
 
     protected $user ;
@@ -21,13 +24,8 @@ class PostTest extends TestCase
         parent::setUp();
         $this->user = User::factory()->create();
         $this->actingAs($this->user);
-
     }
-    /**
-     * Test fetching all posts.
-     *
-     * @return void
-     */
+   
     public function testFetchAllPosts()
     {
     
@@ -60,9 +58,7 @@ class PostTest extends TestCase
 
     /**
      * Test fetching a specific post.
-     *
-     * @return void
-     */
+    */
     public function testFetchSpecificPost()
     {
     
@@ -75,9 +71,7 @@ class PostTest extends TestCase
 
     /**
      * Test adding a new post.
-     *
-     * @return void
-     */
+    */
     public function testAddPost()
     {
         
@@ -99,9 +93,7 @@ class PostTest extends TestCase
 
     /**
      * Test updating a post.
-     *
-     * @return void
-     */
+    */
     public function testUpdatePost()
     {
         $user = User::factory()->create();
@@ -122,9 +114,7 @@ class PostTest extends TestCase
 
     /**
      * Test deleting a post.
-     *
-     * @return void
-     */
+    */
     public function testDeletePost()
     {
         $user = User::factory()->create();

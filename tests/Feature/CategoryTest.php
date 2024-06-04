@@ -11,6 +11,9 @@ use Tests\TestCase;
 class CategoryTest extends TestCase
 {
 
+    /* -----   Category UnitTest   ----- */
+
+
     use RefreshDatabase ,WithFaker ;
 
 
@@ -41,9 +44,7 @@ class CategoryTest extends TestCase
 
     /**
      * Test fetching a specific category.
-     *
-     * @return void
-     */
+    */
     public function testFetchSpecificCategory()
     {
     
@@ -64,9 +65,7 @@ class CategoryTest extends TestCase
 
     /**
      * Test adding a new category.
-     *
-     * @return void
-     */
+    */
     public function testAddCategory()
     {
         
@@ -94,9 +93,7 @@ class CategoryTest extends TestCase
 
     /**
      * Test updating a category.
-     *
-     * @return void
-     */
+    */
     public function testUpdateCategory()
     {
         
@@ -123,11 +120,9 @@ class CategoryTest extends TestCase
         $this->assertDatabaseHas('categories', $updatedData);
     }
 
-    /**
+    /*
      * Test deleting a category.
-     *
-     * @return void
-     */
+    */
     public function testDeleteCategory()
     {
         

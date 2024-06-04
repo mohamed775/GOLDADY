@@ -12,7 +12,12 @@ use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
+
+    /* -----   Auth UnitTest   ----- */
+
     use RefreshDatabase;
+
+    // success Register
 
     public function testRegister()
     {
@@ -35,6 +40,9 @@ class AuthTest extends TestCase
             'email' => 'test@example.com',
         ]);
     }
+
+
+    // success Login
 
     public function testLogin()
     {
@@ -63,6 +71,9 @@ class AuthTest extends TestCase
         $this->assertNotNull(Auth::user());
     }
 
+
+    // success Logout
+    
     public function testLogout()
     {
         // Authenticate a user
