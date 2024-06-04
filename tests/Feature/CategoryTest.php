@@ -5,11 +5,14 @@ namespace Tests\Feature;
 use App\Models\category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
 {
-    use RefreshDatabase;
+
+    use RefreshDatabase ,WithFaker ;
+
 
     protected $user;
 
@@ -17,75 +20,127 @@ class CategoryTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->actingAs($this->user, 'api');
-
+        $this->actingAs($this->user);
     }
 
-    public function test_create_category()
+    public function testFetchAllCategories()
     {
 
-        $response = $this->actingAs($this->user, 'api')->postJson('/api/Categories', [
-            'name' => 'Sample Category',
-        ]);
-
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('categories', [
-            'name' => 'Sample Category',
-        ]);
-
-    }
-
-    public function test_get_categories()
-    {
-
-        Category::factory()->count(3)->create();
-
-        $response = $this->getJson('/api/Categories');
-
-        $response->assertStatus(200);
-        
-    }
-
-    public function test_get_category()
-    {
-        $category = Category::factory()->create();
-
-        $response = $this->getJson("/api/Categories/{$category->id}");
+        $response = $this->getJson('/api/categories');
 
         $response->assertStatus(200)
-            ->assertJson([
-                "status" => true,
-                "message" => "category found",
-                "category"=> ['id' => $category->id,'category_name' => $category->name],
-                "codeStatus"=> 200
-            
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name'
+                    ]
+                ]
             ]);
     }
 
-    public function test_update_category()
+    /**
+     * Test fetching a specific category.
+     *
+     * @return void
+     */
+    public function testFetchSpecificCategory()
     {
+    
         $category = Category::factory()->create();
 
-        $response = $this->putJson("/api/Categories/{$category->id}", [
-            'name' => 'Updated Category',
-        ]);
+        $response = $this->getJson("/api/categories/{$category->id}");
 
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('categories', [
-            'id' => $category->id,
-            'name' => 'Updated Category',
-        ]);
+        $response->assertStatus(200)
+            ->assertJson([
+                "status"=> true,
+                "message"=> "category exist",
+                'category' => [
+                    'id' => $category->id,
+                    'category_name' => $category->name
+                ]
+            ]);
     }
 
-    public function test_delete_category()
+    /**
+     * Test adding a new category.
+     *
+     * @return void
+     */
+    public function testAddCategory()
     {
+        
+
+        $categoryData = [
+            'name' => $this->faker->word
+        ];
+
+        $response = $this->postJson('/api/categories', $categoryData);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                "headers"=> [],
+                "original"=> [
+                   "status"=> true,
+                   "message"=> "category added successfully !",
+                   'category' => [
+                    'category_name' => $categoryData['name']
+                    ]
+                ],"exception"=> null
+            ]);
+
+        $this->assertDatabaseHas('categories', $categoryData);
+    }
+
+    /**
+     * Test updating a category.
+     *
+     * @return void
+     */
+    public function testUpdateCategory()
+    {
+        
         $category = Category::factory()->create();
 
-        $response = $this->deleteJson("/api/Categories/{$category->id}");
+        $updatedData = [
+            'name' => $this->faker->word
+        ];
 
-        $response->assertStatus(200);
-        $this->assertDatabaseMissing('categories', [
-            'id' => $category->id,
-        ]);
+        $response = $this->putJson("/api/categories/{$category->id}", $updatedData);
+
+        $response->assertStatus(202)
+            ->assertJson([
+                "headers"=> [],
+                "original"=> [
+                   "status"=> true,
+                   "message"=> "category updated successfully !",
+                   'category' => [
+                    'category_name' => $updatedData['name']
+                    ]
+                ],"exception"=> null
+            ]);
+
+        $this->assertDatabaseHas('categories', $updatedData);
+    }
+
+    /**
+     * Test deleting a category.
+     *
+     * @return void
+     */
+    public function testDeleteCategory()
+    {
+        
+
+        $category = Category::factory()->create();
+
+        $response = $this->deleteJson("/api/categories/{$category->id}");
+
+        $response->assertStatus(200)
+            ->assertJson([
+                "status"=> true,
+                'message' => 'category deleted successfully !'
+            ]);
+
     }
 }
