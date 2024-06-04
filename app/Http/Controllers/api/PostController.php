@@ -21,12 +21,12 @@ class PostController extends Controller
     
     // getAll posts
 
-    public function index()
+    public function index(Request $request)
     {
         try{
 
-            $posts = Post::with('user' ,'category')->paginate(10);
-            return  ResponseHelper::returnData('posts' , $posts , 'all posts retrived' );  
+            $posts = Post::with('user' ,'category')->paginate($request->get('per_page' ,10));  // coustom paginate 
+            return  PostResource::collection($posts);  
 
         }catch(\Exception $e){
            return ResponseHelper::returnServerError($e->getMessage());

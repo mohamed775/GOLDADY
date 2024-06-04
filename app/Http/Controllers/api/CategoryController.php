@@ -21,12 +21,12 @@ class CategoryController extends Controller
 
     // getAll categories
 
-    public function index()
+    public function index(Request $request)
     {
         try{
 
-            $categories = category::select()->paginate(10);
-            return ResponseHelper::returnData('categories' , CategoryResource::collection($categories)  , 'all categories retrived ');  
+            $categories = category::paginate($request->get('per_page',10));  // coustom paginate with default = 10 
+            return CategoryResource::collection($categories);  
 
         }catch(\Exception $e){
            return ResponseHelper::returnServerError($e->getMessage());
