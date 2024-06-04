@@ -17,11 +17,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+
+  /*  -----   login & register   -----  */
+
 Route::post('/register' , [authController::class , 'register']);
 Route::get('/login' , [authController::class , 'login']);
 
 
-// Route::group(['middleware' => 'auth:api'], function(){
+
+
+Route::group(['middleware' => 'auth.jwt'], function(){
+
+    /*  -----   categories routes   -----  */
 
   Route::get('/categories' , [CategoryController::class , 'index']);
   Route::get('/categories/{id}' , [CategoryController::class , 'show']);
@@ -30,6 +38,8 @@ Route::get('/login' , [authController::class , 'login']);
   Route::delete('/categories/{id}' , [CategoryController::class , 'destroy']);
 
 
+    /*  -----   posts routes   -----  */
+
   Route::get('/posts' , [PostController::class , 'index']);
   Route::get('/posts/{id}' , [PostController::class , 'show']);
   Route::post('/posts' , [PostController::class , 'store']);
@@ -37,7 +47,9 @@ Route::get('/login' , [authController::class , 'login']);
   Route::delete('/posts/{id}' , [PostController::class , 'destroy']);
 
 
+    /*  -----   logout routes   -----  */
+
   Route::get('/logout' , [authController::class , 'logout']);
 
 
-// });
+});

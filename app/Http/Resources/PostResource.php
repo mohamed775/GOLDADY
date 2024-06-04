@@ -19,7 +19,7 @@ class PostResource extends JsonResource
             'post_title' => $this->title ,
             'post_content' => $this->content ,
             'post_category' => CategoryResource::make($this->whenLoaded('category')),
-            'created_Post' => UserResource::make($this->whenLoaded('user'))
+            'created_By' => UserResource::make($this->whenLoaded('user'))
         ];    
     }
 }

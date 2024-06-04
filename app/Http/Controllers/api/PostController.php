@@ -60,8 +60,8 @@ class PostController extends Controller
     {
         try{
             $validate=  Validator::make($request->all(),[
-                'user_id' => 'required|int|max:20',
-                'category_id' => 'required|int|max:20',
+                'user_id' => 'required|int',
+                'category_id' => 'required|int',
                 'title' => 'required|string|max:255',
                 'content' => 'required|string|max:500'
             ]);

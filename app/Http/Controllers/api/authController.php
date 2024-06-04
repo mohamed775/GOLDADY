@@ -59,7 +59,7 @@ class authController extends Controller
             }
             if(!$token = auth()->attempt($valideted->validate()))
             {
-                return ResponseHelper::validateError('user & password is incorrect');
+                return ResponseHelper::validateError('user or password is incorrect');
             }
 
             return ResponseHelper::returnData('access_token' , $token ,'login success' );
