@@ -119,6 +119,7 @@ class CategoryController extends Controller
         try{
 
             $category = category::find($id);
+            
             if($category){
                 $category->delete();
                 return ResponseHelper::returnSuccessMessage('category deleted successfully !'); 

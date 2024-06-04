@@ -57,6 +57,7 @@ class authController extends Controller
             {
                 return ResponseHelper::validateError( $valideted->errors());
             }
+
             if(!$token = auth()->attempt($valideted->validate()))
             {
                 return ResponseHelper::validateError('user or password is incorrect');
@@ -70,7 +71,9 @@ class authController extends Controller
       
      public function logout(){
         if(Auth::user()){
+
             auth()->logout();
+            
             return ResponseHelper::returnSuccessMessage('user logged out');
         }
         return ResponseHelper::notAuthenticated();
